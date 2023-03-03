@@ -159,3 +159,29 @@ function ldb_select_multisite_dataset( $query, $wpdb ) {
 	return [ 'dataset' => $handlers[ $bid ] ];
 }
 $wpdb->add_callback( 'ldb_select_multisite_dataset', 'dataset' );
+
+// --- Sample setup for additional DBs ---
+
+$wpdb->add_database(
+	array(
+		'host'     => DB_HOST,
+		'user'     => DB_USER,
+		'password' => DB_PASSWORD,
+		'name'     => DB_NAME,
+		'dataset'  => 'srv-one',
+		'write'    => 1,
+		'read'     => 1,
+	)
+);
+
+$wpdb->add_database(
+	array(
+		'host'     => DB_HOST,
+		'user'     => DB_USER,
+		'password' => DB_PASSWORD,
+		'name'     => DB_NAME,
+		'dataset'  => 'srv-two',
+		'write'    => 1,
+		'read'     => 1,
+	)
+);
