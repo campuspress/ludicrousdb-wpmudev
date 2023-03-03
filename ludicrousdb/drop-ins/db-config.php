@@ -134,8 +134,13 @@ function ldb_select_multisite_dataset( $query, $wpdb ) {
 	if ( ! isset( $handlers[ $bid ] ) ) {
 		$handlers[ $bid ] = false; // initialize to fallback so we don't do multiple DB queries
 
+		// TODO: perhaps don't hardocde global datasource
 		$global = 'global__r';
 		$dbh    = $wpdb->dbhs[ $global ];
+		if ( empty( $dbh ) ) {
+			return; // should be unreachable, yet...
+		}
+
 		$result = mysqli_query( $dbh, "SELECT srv FROM {$wpdb->blogs} WHERE blog_id={$bid};" );
 		if ( ! $result || false === $row = mysqli_fetch_assoc( $result ) ) {
 			return; // simple return falls back to global dataset
