@@ -47,3 +47,4 @@ $wpdb = new LudicrousDB(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.
 if ( defined( 'DB_CONFIG_FILE' ) && file_exists( DB_CONFIG_FILE ) ) {
 	require_once DB_CONFIG_FILE;
 }
+require_once dirname( __FILE__ ) . '/ludicrousdb/includes/sharding.php';
