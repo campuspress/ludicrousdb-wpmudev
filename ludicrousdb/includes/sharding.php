@@ -3,7 +3,7 @@
 class MultisiteDataset_Sharder {
 	private $_db;
 
-	public function __construct(object $db) {
+	public function __construct( object $db ) {
 		$this->_db = $db;
 	}
 
@@ -22,6 +22,44 @@ class MultisiteDataset_Sharder {
 		$blog_id = (int) $blog_id;
 		$shards  = $this->get_shards();
 		return $shards[ $blog_id % count( $shards ) ];
+	}
+}
+
+class MultisiteDataset {
+	private $_db;
+
+	public function __construct( object $db ) {
+		$this->_db = $db;
+	}
+
+	public function init() {
+		$this->add_query_selector();
+	}
+
+	public function get_callback(): callable {
+		return 'ldb_select_multisite_dataset';
+	}
+
+	public function add_query_selector() {
+		$this->_db->add_callback(
+			$this->get_callback(),
+			'dataset'
+		);
+	}
+
+	public function remove_query_selector(): bool {
+		$nerf = false;
+		foreach ( $this->_db->ludicrous_callbacks['dataset'] as $idx => $cback ) {
+			if ( $cback === $this->get_callback() ) {
+				$nerf = $idx;
+				break;
+			}
+		}
+		if ( $nerf !== false ) {
+			unset( $this->_db->ludicrous_callbacks[ $nerf ] );
+			return true;
+		}
+		return false;
 	}
 }
 
@@ -72,4 +110,4 @@ function ldb_select_multisite_dataset( $query, $wpdb ) {
 
 	return [ 'dataset' => $handlers[ $bid ] ];
 }
-$wpdb->add_callback( 'ldb_select_multisite_dataset', 'dataset' );
+// $wpdb->add_callback( 'ldb_select_multisite_dataset', 'dataset' );
