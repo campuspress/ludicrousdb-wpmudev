@@ -1,20 +1,28 @@
 <?php
 
-function get_shards( $wpdb ) {
-	return array_values(
-		array_filter(
-			array_keys( $wpdb->ludicrous_servers ),
-			function( $srv ) {
-				return $srv != 'global';
-			}
-		)
-	);
-}
+class MultisiteDataset_Sharder {
+	private $_db;
 
-function shard_for( $blog_id, $wpdb ) {
-	$blog_id = (int) $blog_id;
-	$shards  = get_shards( $wpdb );
-	return $shards[ $blog_id % count( $shards ) ];
+	public function __construct(object $db) {
+		$this->_db = $db;
+	}
+
+	function get_shards() {
+		return array_values(
+			array_filter(
+				array_keys( $this->_db->ludicrous_servers ),
+				function( $srv ) {
+					return $srv != 'global';
+				}
+			)
+		);
+	}
+
+	function shard_for( $blog_id ) {
+		$blog_id = (int) $blog_id;
+		$shards  = $this->get_shards();
+		return $shards[ $blog_id % count( $shards ) ];
+	}
 }
 
 function ldb_select_multisite_dataset( $query, $wpdb ) {
