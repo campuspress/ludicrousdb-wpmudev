@@ -28,18 +28,40 @@ class MultisiteDataset_Sharder {
 class MultisiteDataset {
 	private $_db;
 	private $_selector;
+	private $_sharder;
 
 	public function __construct( object $db ) {
 		$this->_db       = $db;
 		$this->_selector = new MultisiteDataset_QuerySelector();
+		$this->_sharder  = new MultisiteDataset_Sharder( $db );
 	}
 
 	public function init() {
 		$this->add_query_selector();
+
+		add_action(
+			'wp_insert_site',
+			[ $this, 'handle_insert_site' ]
+		);
+	}
+
+	public function handle_insert_site( object $site ) {
+		$this->remove_query_selector();
+		$shard = $this->_sharder->shard_for( $site->id );
+		if ( $this->_selector->shard_update( $site->id, $shard, $this->_db ) ) {
+			$this->_selector->set_handler( $site->id, $shard );
+		} else {
+			$this->_selector->unset_handler( $site->id );
+		}
+		$this->add_query_selector();
+	}
+
+	public function get_selector(): MultisiteDataset_QuerySelector {
+		return $this->_selector;
 	}
 
 	public function get_callback(): callable {
-		return [ $this->_selector, 'query_select' ];
+		return [ $this->get_selector(), 'query_select' ];
 	}
 
 	public function add_query_selector() {
@@ -86,6 +108,18 @@ class MultisiteDataset_QuerySelector {
 		if ( $this->has_handler( $bid ) ) {
 			unset( $this->_handlers[ $bid ] );
 		}
+	}
+
+	public function shard_update( $blog_id, $shard, $wpdb ): bool {
+		$global = 'global__r';
+		$dbh    = $wpdb->dbhs[ $global ];
+		if ( empty( $dbh ) ) {
+			return false; // should be unreachable, yet...
+		}
+
+		// TODO: prepare query
+		$result = mysqli_query( $dbh, "UPDATE {$wpdb->blogs} SET srv='{$shard}' WHERE blog_id={$blog_id} LIMIT 1;" );
+		return ! empty( $result );
 	}
 
 	public function query_select( $query, $wpdb ) {
