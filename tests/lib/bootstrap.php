@@ -84,3 +84,5 @@ $wpdb->add_database(
 		'read'     => 1,
 	)
 );
+
+$wpdb->query("alter table {$wpdb->blogs} add column srv varchar(32) after lang_id;");

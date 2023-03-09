@@ -11,6 +11,9 @@
          failOnRisky="true"
          failOnWarning="true"
          verbose="true">
+	<php>
+		<const name="WP_TESTS_MULTISITE" value="1" />
+	</php>
     <testsuites>
         <testsuite name="default">
 			<directory suffix="-test.php">./tests/</directory>
