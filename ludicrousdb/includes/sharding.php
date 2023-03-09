@@ -1,5 +1,22 @@
 <?php
 
+function get_shards( $wpdb ) {
+	return array_values(
+		array_filter(
+			array_keys( $wpdb->ludicrous_servers ),
+			function( $srv ) {
+				return $srv != 'global';
+			}
+		)
+	);
+}
+
+function shard_for( $blog_id, $wpdb ) {
+	$blog_id = (int) $blog_id;
+	$shards  = get_shards( $wpdb );
+	return $shards[ $blog_id % count( $shards ) ];
+}
+
 function ldb_select_multisite_dataset( $query, $wpdb ) {
 	if ( empty( $wpdb->dbhname ) ) {
 		return;

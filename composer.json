@@ -26,7 +26,9 @@
     "wp-coding-standards/wpcs": "^2.2",
     "dealerdirect/phpcodesniffer-composer-installer": "^0.6.2",
     "phpcompatibility/phpcompatibility-wp": "^2.1",
-    "sirbrillig/phpcs-variable-analysis": "^2.8"
+    "sirbrillig/phpcs-variable-analysis": "^2.8",
+    "phpunit/phpunit": "^9.6",
+    "yoast/phpunit-polyfills": "^1.0"
   },
   "scripts": {
     "format": [
@@ -34,6 +36,10 @@
     ],
     "lint": [
       "vendor/bin/phpcs . -v"
-    ]
+    ],
+	"test": [
+		"tests/bin/install.sh",
+		"vendor/bin/phpunit"
+	]
   }
 }
