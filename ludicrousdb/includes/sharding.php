@@ -224,5 +224,6 @@ function ldb_select_multisite_dataset( $query, $wpdb ) {
 
 
 
-$msd = new MultisiteDataset( $wpdb );
-$msd->init();
+define( 'LDB_MULTISITE_DATASET', 'ldb_multisite_dataset' );
+$GLOBALS[ LDB_MULTISITE_DATASET ] = new MultisiteDataset( $wpdb );
+$GLOBALS[ LDB_MULTISITE_DATASET ]->init();

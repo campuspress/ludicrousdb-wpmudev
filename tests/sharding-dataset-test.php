@@ -88,6 +88,7 @@ class ShardingDatasetTest extends TestCase {
 	}
 
 	public function test_switch_to_blog() {
+		$sel     = $GLOBALS[ LDB_MULTISITE_DATASET ]->get_selector();
 		$blog_id = wpmu_create_blog( 'localhost', 'test-shard-switching', 'SHARDZ', 0 );
 		$this->assertTrue(
 			is_numeric( $blog_id ),
@@ -97,6 +98,12 @@ class ShardingDatasetTest extends TestCase {
 			(int) $blog_id > 1,
 			'blog should have been actually created'
 		);
+
+		$sel->unset_handler( $blog_id );
+		$this->assertFalse(
+			$sel->has_handler( $blog_id ),
+			"handler for {$blog_id} should have been unset"
+		);
 		switch_to_blog( $blog_id );
 		$this->assertEquals(
 			'SHARDZ',
@@ -104,6 +111,10 @@ class ShardingDatasetTest extends TestCase {
 			'using proper shard'
 		);
 		restore_current_blog();
+		$this->assertTrue(
+			$sel->has_handler( $blog_id, true ),
+			"handler for {$blog_id} should have been set now"
+		);
 		$this->_kill( $blog_id );
 	}
 
