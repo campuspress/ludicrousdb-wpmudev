@@ -37,20 +37,45 @@ class ShardingDatasetTest extends TestCase {
 		$msd = new MultisiteDataset( $wpdb );
 		$msd->init();
 
-		$blog_id = wpmu_create_blog( 'localhost', 'test', 'test', 0 );
-		$this->assertTrue(
-			is_numeric( $blog_id ),
-			'blog should have been created'
-		);
-		$this->assertTrue(
-			(int) $blog_id > 1,
-			'blog should have been actually created'
-		);
-		$sel = $msd->get_selector();
+		$previous_id    = 0;
+		$previous_shard = '';
 
-		$this->assertTrue(
-			$sel->has_handler( $blog_id, true ),
-			'initial blog should have handler set'
-		);
+		for ( $i = 0; $i < 4; $i++ ) {
+			$blog_id = wpmu_create_blog( 'localhost', "test-${i}", 'test', 0 );
+			$this->assertTrue(
+				is_numeric( $blog_id ),
+				'blog should have been created'
+			);
+			$this->assertTrue(
+				(int) $blog_id > 1,
+				'blog should have been actually created'
+			);
+			$sel = $msd->get_selector();
+
+			$this->assertTrue(
+				$sel->has_handler( $blog_id, true ),
+				'initial blog should have handler set'
+			);
+
+			$shard = $sel->get_handler( $blog_id );
+			$this->assertTrue(
+				! empty( $shard ),
+				"shard [{$shard}] is present"
+			);
+
+			$this->assertNotEquals(
+				$blog_id,
+				$previous_id,
+				'new blog ID should not be equal to previous blog ID'
+			);
+			$this->assertNotEquals(
+				$shard,
+				$previous_shard,
+				'new blog shard should not be equal to previous blog shard'
+			);
+
+			$previous_id    = $blog_id;
+			$previous_shard = $shard;
+		}
 	}
 }
