@@ -220,3 +220,9 @@ function ldb_select_multisite_dataset( $query, $wpdb ) {
 }
 // $wpdb->add_callback( 'ldb_select_multisite_dataset', 'dataset' );
 */
+
+
+
+
+$msd = new MultisiteDataset( $wpdb );
+$msd->init();

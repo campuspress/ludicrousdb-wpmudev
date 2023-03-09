@@ -40,6 +40,8 @@ class ShardingDatasetTest extends TestCase {
 		$previous_id    = 0;
 		$previous_shard = '';
 
+		$ids_to_remove = [];
+
 		for ( $i = 0; $i < 4; $i++ ) {
 			$blog_id = wpmu_create_blog( 'localhost', "test-${i}", 'test', 0 );
 			$this->assertTrue(
@@ -76,6 +78,52 @@ class ShardingDatasetTest extends TestCase {
 
 			$previous_id    = $blog_id;
 			$previous_shard = $shard;
+
+			$ids_to_remove[] = $blog_id;
+		}
+
+		foreach ( $ids_to_remove as $bid ) {
+			$this->_kill( $bid );
+		}
+	}
+
+	public function test_switch_to_blog() {
+		$blog_id = wpmu_create_blog( 'localhost', 'test-shard-switching', 'SHARDZ', 0 );
+		$this->assertTrue(
+			is_numeric( $blog_id ),
+			'blog should have been created'
+		);
+		$this->assertTrue(
+			(int) $blog_id > 1,
+			'blog should have been actually created'
+		);
+		switch_to_blog( $blog_id );
+		$this->assertEquals(
+			'SHARDZ',
+			get_option( 'blogname' ),
+			'using proper shard'
+		);
+		restore_current_blog();
+		$this->_kill( $blog_id );
+	}
+
+	private function _kill( $bid ) {
+		global $wpdb;
+		$tables = [
+			"wptests_{$bid}_commentmeta",
+			"wptests_{$bid}_comments",
+			"wptests_{$bid}_links",
+			"wptests_{$bid}_options",
+			"wptests_{$bid}_postmeta",
+			"wptests_{$bid}_posts",
+			"wptests_{$bid}_term_relationships",
+			"wptests_{$bid}_term_taxonomy",
+			"wptests_{$bid}_termmeta",
+			"wptests_{$bid}_terms",
+		];
+		$wpdb->query( "DELETE FROM {$wpdb->blogs} WHERE blog_id=$bid" );
+		foreach ( $tables as $table ) {
+			$wpdb->query( "DROP TABLE {$table}" );
 		}
 	}
 }
