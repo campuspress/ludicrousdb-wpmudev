@@ -1,27 +1,36 @@
 <?php
 
 class MultisiteDataset_Sharder {
+	const GLOBAL_DATASET = 'global';
+
 	private $_db;
 
 	public function __construct( object $db ) {
 		$this->_db = $db;
 	}
 
-	function get_shards() {
+	public function get_shards() {
 		return array_values(
 			array_filter(
 				array_keys( $this->_db->ludicrous_servers ),
 				function( $srv ) {
-					return $srv != 'global';
+					return $srv != self::GLOBAL_DATASET;
 				}
 			)
 		);
 	}
 
-	function shard_for( $blog_id ) {
+	public function shard_for( int $blog_id ): string {
 		$blog_id = (int) $blog_id;
 		$shards  = $this->get_shards();
 		return $shards[ $blog_id % count( $shards ) ];
+	}
+
+	public function is_valid_shard( string $shard ): bool {
+		if ( $shard === self::GLOBAL_DATASET ) {
+			return true;
+		}
+		return in_array( $shard, $this->get_shards(), true );
 	}
 }
 
@@ -115,6 +124,15 @@ class MultisiteDataset_QuerySelector {
 		$dbh    = $wpdb->dbhs[ $global ];
 		if ( empty( $dbh ) ) {
 			return false; // should be unreachable, yet...
+		}
+
+		$blog_id = (int) $blog_id;
+		if ( ! $blog_id ) {
+			return false;
+		}
+		$sharder = new MultisiteDataset_Sharder( $wpdb );
+		if ( ! $sharder->is_valid_shard( $shard ) ) {
+			return false;
 		}
 
 		// TODO: prepare query

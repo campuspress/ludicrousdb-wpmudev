@@ -5,14 +5,16 @@ use PHPUnit\Framework\TestCase;
 class ShardingSharderMockTest extends TestCase {
 
 	public function setUp(): void {
-		$db = new MockDB([
-			'global' => 'whatever',
-			'mock-one' => 'whatever',
-			'mock-two' => 'whatever',
-			'mock-three' => 'whatever',
-			'mock-four' => 'whatever',
-		]);
-		$this->sharder = new MultisiteDataset_Sharder($db);
+		$db            = new MockDB(
+			[
+				'global'     => 'whatever',
+				'mock-one'   => 'whatever',
+				'mock-two'   => 'whatever',
+				'mock-three' => 'whatever',
+				'mock-four'  => 'whatever',
+			]
+		);
+		$this->sharder = new MultisiteDataset_Sharder( $db );
 	}
 
 	public function test_get_shards() {
@@ -48,12 +50,30 @@ class ShardingSharderMockTest extends TestCase {
 			);
 		}
 	}
+
+	public function test_is_valid_shard() {
+		$suite = [
+			'wat'         => false,
+			'global'      => true,
+			'mock-one'    => true,
+			'mock-twenty' => false,
+		];
+		foreach ( $suite as $shard => $expected ) {
+			$actual = $this->sharder->is_valid_shard( $shard );
+			$not    = $expected ? '' : 'not';
+			$this->assertEquals(
+				$actual,
+				$expected,
+				"shard {$shard} expected to {$not} be valid"
+			);
+		}
+	}
 }
 
 class MockDB {
 	public $ludicrous_servers = [];
 
-	public function __construct(array $servers) {
+	public function __construct( array $servers ) {
 		$this->ludicrous_servers = $servers;
 	}
 }
@@ -63,7 +83,7 @@ class ShardingSharderWpdbTest extends TestCase {
 	public function setUp(): void {
 		global $wpdb;
 
-		$this->sharder = new MultisiteDataset_Sharder($wpdb);
+		$this->sharder = new MultisiteDataset_Sharder( $wpdb );
 	}
 
 	public function test_get_shards() {

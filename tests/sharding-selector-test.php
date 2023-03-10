@@ -38,4 +38,37 @@ class ShardingSelectorTest extends TestCase {
 			'handler is not empty'
 		);
 	}
+
+	public function test_shard_update_fail_conditions() {
+		global $wpdb;
+		$qs = new MultisiteDataset_QuerySelector();
+
+		$this->assertFalse(
+			$qs->shard_update( 0, 'wat', $wpdb ),
+			'shard update should fail for blog ID=0'
+		);
+		$this->assertFalse(
+			$qs->shard_update( 'wat', 'wat', $wpdb ),
+			'shard update should fail for blog ID=wat'
+		);
+
+		$this->assertFalse(
+			$qs->shard_update( 1, 'wat', $wpdb ),
+			'shard update should fail for invalid shard'
+		);
+
+		$blog_id = wpmu_create_blog( 'localhost', 'test-shard-mainline', 'GLOBAL', 0 );
+		$this->assertTrue(
+			is_numeric( $blog_id ),
+			'blog should have been created'
+		);
+		$this->assertTrue(
+			(int) $blog_id > 1,
+			'blog should have been actually created'
+		);
+		$this->assertTrue(
+			$qs->shard_update( $blog_id, MultisiteDataset_Sharder::GLOBAL_DATASET, $wpdb ),
+			'blog shard update happy path'
+		);
+	}
 }
