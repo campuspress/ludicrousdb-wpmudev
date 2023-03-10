@@ -1,7 +1,12 @@
 <?php
 
-class MultisiteDataset_Sharder {
+final class MultisiteDataset_ShardingStrategy {
 	const GLOBAL_DATASET = 'global';
+	const GLOBAL_READER  = 'global__r';
+	const DATASET_FIELD  = 'srv';
+}
+
+class MultisiteDataset_Sharder {
 
 	private $_db;
 
@@ -14,7 +19,7 @@ class MultisiteDataset_Sharder {
 			array_filter(
 				array_keys( $this->_db->ludicrous_servers ),
 				function( $srv ) {
-					return $srv != self::GLOBAL_DATASET;
+					return $srv != MultisiteDataset_ShardingStrategy::GLOBAL_DATASET;
 				}
 			)
 		);
@@ -27,7 +32,7 @@ class MultisiteDataset_Sharder {
 	}
 
 	public function is_valid_shard( string $shard ): bool {
-		if ( $shard === self::GLOBAL_DATASET ) {
+		if ( $shard === MultisiteDataset_ShardingStrategy::GLOBAL_DATASET ) {
 			return true;
 		}
 		return in_array( $shard, $this->get_shards(), true );
@@ -120,8 +125,7 @@ class MultisiteDataset_QuerySelector {
 	}
 
 	public function shard_update( $blog_id, $shard, $wpdb ): bool {
-		// TODO: perhaps don't hardocde global datasource
-		$global = 'global__r';
+		$global = MultisiteDataset_ShardingStrategy::GLOBAL_READER;
 		$dbh    = $wpdb->dbhs[ $global ];
 		if ( empty( $dbh ) ) {
 			return false; // should be unreachable, yet...
@@ -137,7 +141,11 @@ class MultisiteDataset_QuerySelector {
 		}
 
 		$shard_esc = mysqli_real_escape_string( $dbh, $shard );
-		$result    = mysqli_query( $dbh, "UPDATE {$wpdb->blogs} SET srv='{$shard_esc}' WHERE blog_id={$blog_id} LIMIT 1;" );
+		$fld       = MultisiteDataset_ShardingStrategy::DATASET_FIELD;
+		$result    = mysqli_query(
+			$dbh,
+			"UPDATE {$wpdb->blogs} SET {$fld}='{$shard_esc}' WHERE blog_id={$blog_id} LIMIT 1;"
+		);
 		return ! empty( $result );
 	}
 
@@ -159,14 +167,14 @@ class MultisiteDataset_QuerySelector {
 			// initialize to fallback so we don't do multiple DB queries.
 			$this->set_dataset( $bid, '' );
 
-			// TODO: perhaps don't hardocde global datasource
-			$global = 'global__r';
+			$global = MultisiteDataset_ShardingStrategy::GLOBAL_READER;
 			$dbh    = $wpdb->dbhs[ $global ];
 			if ( empty( $dbh ) ) {
 				return; // should be unreachable, yet...
 			}
 
-			$result = mysqli_query( $dbh, "SELECT srv FROM {$wpdb->blogs} WHERE blog_id={$bid};" );
+			$fld    = MultisiteDataset_ShardingStrategy::DATASET_FIELD;
+			$result = mysqli_query( $dbh, "SELECT {$fld} FROM {$wpdb->blogs} WHERE blog_id={$bid};" );
 			if ( ! $result || false === $row = mysqli_fetch_assoc( $result ) ) {
 				return; // simple return falls back to global dataset
 			}

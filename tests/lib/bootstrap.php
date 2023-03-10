@@ -83,4 +83,5 @@ $wpdb->add_database(
 	)
 );
 
-$wpdb->query( "alter table {$wpdb->blogs} add column srv varchar(32) after lang_id;" );
+$fld = MultisiteDataset_ShardingStrategy::DATASET_FIELD;
+$wpdb->query( "alter table {$wpdb->blogs} add column {$fld} varchar(32) after lang_id;" );
