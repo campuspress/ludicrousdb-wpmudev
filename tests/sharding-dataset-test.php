@@ -55,11 +55,11 @@ class ShardingDatasetTest extends TestCase {
 			$sel = $msd->get_selector();
 
 			$this->assertTrue(
-				$sel->has_handler( $blog_id, true ),
-				'initial blog should have handler set'
+				$sel->has_dataset( $blog_id, true ),
+				'initial blog should have dataset set'
 			);
 
-			$shard = $sel->get_handler( $blog_id );
+			$shard = $sel->get_dataset( $blog_id );
 			$this->assertTrue(
 				! empty( $shard ),
 				"shard [{$shard}] is present"
@@ -99,10 +99,10 @@ class ShardingDatasetTest extends TestCase {
 			'blog should have been actually created'
 		);
 
-		$sel->unset_handler( $blog_id );
+		$sel->unset_dataset( $blog_id );
 		$this->assertFalse(
-			$sel->has_handler( $blog_id ),
-			"handler for {$blog_id} should have been unset"
+			$sel->has_dataset( $blog_id ),
+			"dataset for {$blog_id} should have been unset"
 		);
 		switch_to_blog( $blog_id );
 		$this->assertEquals(
@@ -112,8 +112,8 @@ class ShardingDatasetTest extends TestCase {
 		);
 		restore_current_blog();
 		$this->assertTrue(
-			$sel->has_handler( $blog_id, true ),
-			"handler for {$blog_id} should have been set now"
+			$sel->has_dataset( $blog_id, true ),
+			"dataset for {$blog_id} should have been set now"
 		);
 		$this->_kill( $blog_id );
 	}
