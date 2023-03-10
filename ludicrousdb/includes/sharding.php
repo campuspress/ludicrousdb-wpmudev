@@ -120,6 +120,7 @@ class MultisiteDataset_QuerySelector {
 	}
 
 	public function shard_update( $blog_id, $shard, $wpdb ): bool {
+		// TODO: perhaps don't hardocde global datasource
 		$global = 'global__r';
 		$dbh    = $wpdb->dbhs[ $global ];
 		if ( empty( $dbh ) ) {
@@ -135,8 +136,8 @@ class MultisiteDataset_QuerySelector {
 			return false;
 		}
 
-		// TODO: prepare query
-		$result = mysqli_query( $dbh, "UPDATE {$wpdb->blogs} SET srv='{$shard}' WHERE blog_id={$blog_id} LIMIT 1;" );
+		$shard_esc = mysqli_real_escape_string( $dbh, $shard );
+		$result    = mysqli_query( $dbh, "UPDATE {$wpdb->blogs} SET srv='{$shard_esc}' WHERE blog_id={$blog_id} LIMIT 1;" );
 		return ! empty( $result );
 	}
 
