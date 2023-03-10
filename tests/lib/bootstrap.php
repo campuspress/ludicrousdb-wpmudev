@@ -5,35 +5,33 @@ if ( ! $_tests_dir ) {
 	$_tests_dir = '/tmp/wordpress-tests-lib';
 }
 
-/* define( 'CAMPUS_AUDIT_IS_TEST_ENV', true ); */
-
-/* require_once $_tests_dir . '/includes/functions.php'; */
-
-/*
- function _manually_load_plugin() { */
-/*
-  if ( ! defined( 'CAMPUS_AUDIT_TESTS_DATA_DIR' ) ) { */
-/*
-	  define( */
-/*
-		  'CAMPUS_AUDIT_TESTS_DATA_DIR', */
-/*
-		  trailingslashit( dirname( __FILE__ ) ) . 'data' */
-/*
-	  ); */
-/* 	} */
-
-/*
-  require_once dirname( dirname( __FILE__ ) ) . '/campus-audit-trail.php'; */
-/*
- } */
-/* tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' ); */
-
 require_once $_tests_dir . '/includes/bootstrap.php';
 
 if ( ! function_exists( 'xd' ) ) {
 	function xd() {
 		die( var_export( func_get_args() ) );
+	}
+}
+
+if ( ! function_exists( 'msds_ldb_delete_blog' ) ) {
+	function msds_ldb_delete_blog( $blog_id ) {
+		global $wpdb;
+		$tables = [
+			"wptests_{$blog_id}_commentmeta",
+			"wptests_{$blog_id}_comments",
+			"wptests_{$blog_id}_links",
+			"wptests_{$blog_id}_options",
+			"wptests_{$blog_id}_postmeta",
+			"wptests_{$blog_id}_posts",
+			"wptests_{$blog_id}_term_relationships",
+			"wptests_{$blog_id}_term_taxonomy",
+			"wptests_{$blog_id}_termmeta",
+			"wptests_{$blog_id}_terms",
+		];
+		$wpdb->query( "DELETE FROM {$wpdb->blogs} WHERE blog_id=$blog_id" );
+		foreach ( $tables as $table ) {
+			$wpdb->query( "DROP TABLE {$table}" );
+		}
 	}
 }
 
@@ -85,4 +83,4 @@ $wpdb->add_database(
 	)
 );
 
-$wpdb->query("alter table {$wpdb->blogs} add column srv varchar(32) after lang_id;");
+$wpdb->query( "alter table {$wpdb->blogs} add column srv varchar(32) after lang_id;" );

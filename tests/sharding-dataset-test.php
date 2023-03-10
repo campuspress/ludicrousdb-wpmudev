@@ -83,7 +83,7 @@ class ShardingDatasetTest extends TestCase {
 		}
 
 		foreach ( $ids_to_remove as $bid ) {
-			$this->_kill( $bid );
+			msds_ldb_delete_blog( $bid );
 		}
 	}
 
@@ -115,26 +115,6 @@ class ShardingDatasetTest extends TestCase {
 			$sel->has_dataset( $blog_id, true ),
 			"dataset for {$blog_id} should have been set now"
 		);
-		$this->_kill( $blog_id );
-	}
-
-	private function _kill( $bid ) {
-		global $wpdb;
-		$tables = [
-			"wptests_{$bid}_commentmeta",
-			"wptests_{$bid}_comments",
-			"wptests_{$bid}_links",
-			"wptests_{$bid}_options",
-			"wptests_{$bid}_postmeta",
-			"wptests_{$bid}_posts",
-			"wptests_{$bid}_term_relationships",
-			"wptests_{$bid}_term_taxonomy",
-			"wptests_{$bid}_termmeta",
-			"wptests_{$bid}_terms",
-		];
-		$wpdb->query( "DELETE FROM {$wpdb->blogs} WHERE blog_id=$bid" );
-		foreach ( $tables as $table ) {
-			$wpdb->query( "DROP TABLE {$table}" );
-		}
+		msds_ldb_delete_blog( $blog_id );
 	}
 }

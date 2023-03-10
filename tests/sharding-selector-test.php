@@ -70,5 +70,6 @@ class ShardingSelectorTest extends TestCase {
 			$qs->shard_update( $blog_id, MultisiteDataset_Sharder::GLOBAL_DATASET, $wpdb ),
 			'blog shard update happy path'
 		);
+		msds_ldb_delete_blog( $blog_id );
 	}
 }
