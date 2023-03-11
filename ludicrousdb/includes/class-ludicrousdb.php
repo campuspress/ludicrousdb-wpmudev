@@ -521,7 +521,6 @@ class LudicrousDB extends wpdb {
 			}
 
 			// Fallback to wpdb db_connect method.
-
 			$this->dbuser     = DB_USER;
 			$this->dbpassword = DB_PASSWORD;
 			$this->dbname     = DB_NAME;
@@ -790,7 +789,7 @@ class LudicrousDB extends wpdb {
 							$this->dbh2host[ $dbhname ] = $host_and_port;
 
 							// Define these to avoid undefined variable notices
-							$queries = isset( $queries   ) ? $queries : 1; // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
+							$queries = isset( $queries ) ? $queries : 1; // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable
 							$lag     = isset( $this->lag ) ? $this->lag : 0;
 
 							$this->last_connection    = compact( 'dbhname', 'host', 'port', 'user', 'name', 'tcp', 'elapsed', 'success', 'queries', 'lag' );
@@ -856,14 +855,17 @@ class LudicrousDB extends wpdb {
 					continue;
 				}
 
-				$this->run_callbacks( 'db_connection_error', array(
-					'host'      => $host,
-					'port'      => $port,
-					'operation' => $operation,
-					'table'     => $this->table,
-					'dataset'   => $dataset,
-					'dbhname'   => $dbhname,
-				) );
+				$this->run_callbacks(
+					'db_connection_error',
+					array(
+						'host'      => $host,
+						'port'      => $port,
+						'operation' => $operation,
+						'table'     => $this->table,
+						'dataset'   => $dataset,
+						'dbhname'   => $dbhname,
+					)
+				);
 
 				return $this->bail( "Unable to connect to {$host}:{$port} to {$operation} table '{$this->table}' ({$dataset})" );
 			}
@@ -1258,8 +1260,8 @@ class LudicrousDB extends wpdb {
 		$message .= '<p>' . sprintf(
 			/* translators: %s: database host */
 				__( 'This means that we lost contact with the database server at %s. This could mean your host&#8217;s database server is down.', 'ludicrousdb' ),
-				'<code>' . htmlspecialchars( $this->dbhost, ENT_QUOTES ) . '</code>'
-			) . "</p>\n";
+			'<code>' . htmlspecialchars( $this->dbhost, ENT_QUOTES ) . '</code>'
+		) . "</p>\n";
 		$message .= "<ul>\n";
 		$message .= '<li>' . __( 'Are you sure that the database server is running?', 'ludicrousdb' ) . "</li>\n";
 		$message .= '<li>' . __( 'Are you sure that the database server is not under particularly heavy load?', 'ludicrousdb' ) . "</li>\n";
@@ -1267,8 +1269,8 @@ class LudicrousDB extends wpdb {
 		$message .= '<p>' . sprintf(
 			/* translators: %s: support forums URL */
 				__( 'If you&#8217;re unsure what these terms mean you should probably contact your host. If you still need help you can always visit the <a href="%s">WordPress Support Forums</a>.', 'ludicrousdb' ),
-				__( 'https://wordpress.org/support/', 'ludicrousdb' )
-			) . "</p>\n";
+			__( 'https://wordpress.org/support/', 'ludicrousdb' )
+		) . "</p>\n";
 
 		// We weren't able to reconnect, so we better bail.
 		$this->bail( $message, 'db_connect_fail' );
@@ -2021,14 +2023,18 @@ class LudicrousDB extends wpdb {
 			list( $type ) = explode( '(', $column->Type );  // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 			// A binary/blob means the whole query gets treated like this.
-			if ( in_array( strtoupper( $type ), array(
-				'BINARY',
-				'VARBINARY',
-				'TINYBLOB',
-				'MEDIUMBLOB',
-				'BLOB',
-				'LONGBLOB',
-			), true ) ) {
+			if ( in_array(
+				strtoupper( $type ),
+				array(
+					'BINARY',
+					'VARBINARY',
+					'TINYBLOB',
+					'MEDIUMBLOB',
+					'BLOB',
+					'LONGBLOB',
+				),
+				true
+			) ) {
 				$this->table_charset[ $tablekey ] = 'binary';
 
 				return 'binary';

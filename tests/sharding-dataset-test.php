@@ -43,7 +43,7 @@ class ShardingDatasetTest extends TestCase {
 		$ids_to_remove = [];
 
 		for ( $i = 0; $i < 4; $i++ ) {
-			$blog_id = wpmu_create_blog( 'localhost', "test-${i}", 'test', 0 );
+			$blog_id = wpmu_create_blog( 'localhost', "test-{$i}", 'test', 0 );
 			$this->assertTrue(
 				is_numeric( $blog_id ),
 				'blog should have been created'
