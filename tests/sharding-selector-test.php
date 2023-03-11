@@ -67,7 +67,7 @@ class ShardingSelectorTest extends TestCase {
 			'blog should have been actually created'
 		);
 		$this->assertTrue(
-			$qs->shard_update( $blog_id, MultisiteDataset_ShardingStrategy::GLOBAL_DATASET, $wpdb ),
+			$qs->shard_update( $blog_id, MultisiteDataset_Config::GLOBAL_DATASET, $wpdb ),
 			'blog shard update happy path'
 		);
 		msds_ldb_delete_blog( $blog_id );
