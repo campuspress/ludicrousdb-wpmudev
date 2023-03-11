@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./tests/bin/install-wp-tests.sh ludicrousdb root password mysql
+./tests/bin/install-wp-tests.sh ludicrousdb root password localhost
 
 WP_CORE_DIR=${WP_CORE_DIR-/tmp/wordpress/}
 WP_CORE_DIR=$(echo $WP_CORE_DIR | sed "s:/\+$::")
