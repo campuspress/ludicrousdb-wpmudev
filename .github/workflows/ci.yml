@@ -19,8 +19,7 @@ jobs:
       mysql:
         image: mysql:latest
         env:
-          MYSQL_ROOT_PASSWORD: ""
-          MYSQL_ALLOW_EMPTY_PASSWORD: true
+          MYSQL_ROOT_PASSWORD: password
           MYSQL_DATABASE: ludicrousdb
         ports:
           - 3306/tcp
@@ -60,4 +59,6 @@ jobs:
       run: vendor/bin/phpcs -q --report=checkstyle --runtime-set ignore_errors_on_exit 1 -v | cs2pr --graceful-warnings
       
     - name: Run tests
-      run: composer test
+      run: >-
+        - ./tests/bin/install-ci.sh
+        - ./vendor/bin/phpunit
