@@ -3,6 +3,7 @@
 use PHPUnit\Framework\TestCase;
 
 class ShardingSharderMockTest extends TestCase {
+	protected $sharder;
 
 	public function setUp(): void {
 		$db            = new MockDB(
@@ -79,6 +80,7 @@ class MockDB {
 }
 
 class ShardingSharderWpdbTest extends TestCase {
+	protected $sharder;
 
 	public function setUp(): void {
 		global $wpdb;

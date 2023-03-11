@@ -471,6 +471,17 @@ class LudicrousDB extends wpdb {
 			return false;
 		}
 
+		/*
+		 * Set the MySQLi error reporting off because WordPress handles its own.
+		 * This is due to the default value change from `MYSQLI_REPORT_OFF`
+		 * to `MYSQLI_REPORT_ERROR|MYSQLI_REPORT_STRICT` in PHP 8.1.
+		 * https://make.wordpress.org/core/2022/01/10/wordpress-5-9-and-php-8-0-8-1/#php-8-1-mysqli-default-error-mode-changed
+		 * https://github.com/stuttter/ludicrousdb/issues/144
+		 */
+		if ( function_exists( 'mysqli_report' ) && defined( 'MYSQLI_REPORT_OFF' ) ) {
+			mysqli_report( MYSQLI_REPORT_OFF );
+		}
+
 		// can be empty/false if the query is e.g. "COMMIT"
 		$this->table = $this->get_table_from_query( $query );
 		if ( empty( $this->table ) ) {
