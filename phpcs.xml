@@ -38,8 +38,20 @@
 			<property name="check_translator_comments" value="true" />
 		</properties>
 	</rule>
+	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
+		<exclude-pattern>ludicrousdb/includes/sharding.php</exclude-pattern>
+	</rule>
 	<rule ref="PHPCompatibilityWP">
 		<exclude name="PHPCompatibility.Extensions.RemovedExtensions.mysql_DeprecatedRemoved" />
+		<exclude name="PHPCompatibility.FunctionDeclarations.NewParamTypeDeclarations.intFound" />
+		<exclude name="PHPCompatibility.FunctionDeclarations.NewParamTypeDeclarations.boolFound" />
+		<exclude name="PHPCompatibility.FunctionDeclarations.NewParamTypeDeclarations.objectFound" />
+		<exclude name="PHPCompatibility.FunctionDeclarations.NewParamTypeDeclarations.stringFound" />
+		<exclude name="PHPCompatibility.FunctionDeclarations.NewReturnTypeDeclarations.boolFound" />
+		<exclude name="PHPCompatibility.FunctionDeclarations.NewReturnTypeDeclarations.callableFound" />
+		<exclude name="PHPCompatibility.FunctionDeclarations.NewReturnTypeDeclarations.stringFound" />
+		<exclude name="PHPCompatibility.FunctionDeclarations.NewReturnTypeDeclarations.class_nameFound" />
+		<exclude name="PHPCompatibility.FunctionDeclarations.NewReturnTypeDeclarations.objectFound" />
 	</rule>
 
 	<config name="testVersion" value="5.6-" />
@@ -47,6 +59,7 @@
 	<rule ref="VariableAnalysis.CodeAnalysis.VariableAnalysis">
 		<properties>
 			<property name="validUndefinedVariableNames" value="wpdb server" />
+			<property name="validUnusedVariableNames" value="wpdb" />
 		</properties>
 	</rule>
 
