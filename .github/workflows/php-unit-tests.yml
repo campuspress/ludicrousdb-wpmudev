@@ -1,10 +1,10 @@
-name: Lint and test
+name: Unit tests
 
 on:
-  # push:
-  #   branches: [ "master" ]
-  # pull_request:
-  #   branches: [ "master" ]
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
   workflow_dispatch:
 
 permissions:
@@ -54,10 +54,7 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
       
-    - name: Lint code
-      run: vendor/bin/phpcs -q --report=checkstyle --runtime-set ignore_errors_on_exit 1 -v | cs2pr --graceful-warnings
-      
     - name: Run tests
       run: |
-        ./tests/bin/install-ci.sh
+        ./tests/bin/install.sh 127.0.0.1 password
         ./vendor/bin/phpunit
