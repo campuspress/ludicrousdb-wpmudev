@@ -20,7 +20,6 @@ jobs:
         image: mysql:latest
         env:
           MYSQL_ROOT_PASSWORD: password
-          MYSQL_DATABASE: ludicrousdb
         ports:
           - 3306:3306
         options: >-
