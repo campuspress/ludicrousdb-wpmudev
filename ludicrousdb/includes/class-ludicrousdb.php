@@ -343,7 +343,7 @@ class LudicrousDB extends wpdb {
 		);
 
 		// Merge using defaults
-		$db      = wp_parse_args( $db, $database_defaults );
+		$db = wp_parse_args( $db, $database_defaults );
 
 		// Break these apart to make code easier to understand below
 		$dataset = $db['dataset'];
@@ -655,7 +655,7 @@ class LudicrousDB extends wpdb {
 			}
 
 			$tries_remaining = count( $servers );
-			if ( $tries_remaining === 0  ) {
+			if ( $tries_remaining === 0 ) {
 				return $this->bail( "No database servers were found to match the query. ({$this->table}, {$dataset})" );
 			}
 
@@ -2182,7 +2182,7 @@ class LudicrousDB extends wpdb {
 		if ( $this->tcp_is_cache_persistent() ) {
 			return wp_cache_get( $key, $this->cache_group );
 
-		// Fallback to local cache
+			// Fallback to local cache
 		} elseif ( ! empty( $this->tcp_cache[ $key ] ) ) {
 
 			// Not expired
@@ -2193,7 +2193,7 @@ class LudicrousDB extends wpdb {
 					? $this->tcp_cache[ $key ]['value']
 					: false;
 
-			// Expired, so delete and proceed
+				// Expired, so delete and proceed
 			} else {
 				$this->tcp_cache_delete( $key );
 			}
@@ -2228,11 +2228,11 @@ class LudicrousDB extends wpdb {
 		if ( $this->tcp_is_cache_persistent() ) {
 			return wp_cache_set( $key, $value, $this->cache_group, $expires );
 
-		// Fallback to local cache
+			// Fallback to local cache
 		} else {
 			$this->tcp_cache[ $key ] = array(
 				'value'      => $value,
-				'expiration' => time() + $expires
+				'expiration' => time() + $expires,
 			);
 		}
 
@@ -2261,7 +2261,7 @@ class LudicrousDB extends wpdb {
 		if ( $this->tcp_is_cache_persistent() ) {
 			return wp_cache_delete( $key, $this->cache_group );
 
-		// Fallback to local cache
+			// Fallback to local cache
 		} else {
 			unset( $this->tcp_cache[ $key ] );
 		}

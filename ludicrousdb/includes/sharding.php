@@ -55,7 +55,7 @@ class MultisiteDataset {
 
 		add_action(
 			'wp_insert_site',
-			[ $this, 'handle_insert_site' ]
+			array( $this, 'handle_insert_site' )
 		);
 	}
 
@@ -75,7 +75,7 @@ class MultisiteDataset {
 	}
 
 	public function get_callback(): callable {
-		return [ $this->get_selector(), 'query_select' ];
+		return array( $this->get_selector(), 'query_select' );
 	}
 
 	public function add_query_selector() {
@@ -102,7 +102,7 @@ class MultisiteDataset {
 }
 
 class MultisiteDataset_QuerySelector {
-	private $_datasets = [];
+	private $_datasets = array();
 
 	public function has_dataset( int $bid, bool $empty_check = false ): bool {
 		return empty( $empty_check )
@@ -194,7 +194,7 @@ class MultisiteDataset_QuerySelector {
 			return;
 		}
 
-		return [ 'dataset' => $this->get_dataset( $bid ) ];
+		return array( 'dataset' => $this->get_dataset( $bid ) );
 	}
 }
 
