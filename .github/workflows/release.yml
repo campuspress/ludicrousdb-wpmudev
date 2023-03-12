@@ -17,7 +17,9 @@ jobs:
         fetch-depth: 0
     - run: git remote add -f upstream https://github.com/stuttter/ludicrousdb.git
 
-    - name: Run tests
+    - name: Create release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         git fetch
         version=$(git describe upstream/master --abbrev=0)
@@ -30,3 +32,4 @@ jobs:
         echo "Building zipname: [${zipname}]"
         git archive --format=zip --prefix=ludicrousdb/ -o $zipname HEAD $(ls --color=none | grep -v 'tests')
         ls -lah
+        gh release create "v${version}-${ahead}" --generate-notes "${zipname}"
