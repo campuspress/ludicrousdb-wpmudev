@@ -20,13 +20,14 @@ jobs:
       run: |
         git remote add upstream https://github.com/stuttter/ludicrousdb.git
         git fetch
-        version=$(git describe upstream/master --abbrev=0)
-        version=${version:-"current"}
-        echo "Building with version: [${version}]"
-        ahead=$(git rev-list --count upstream/master...master)
-        ahead=${ahead:-"beta"}
-        echo "Building ahead: [${ahead}]"
-        zipname="ludicrousdb-wpmudev-${version}-${ahead}.zip"
-        echo "Building zipname: [${zipname}]"
-        git archive --format=zip --prefix=ludicrousdb/ -o $zipname HEAD $(ls --color=none | grep -v 'tests')
-        ls -lah
+        git describe
+        # version=$(git describe upstream/master --abbrev=0)
+        # version=${version:-"current"}
+        # echo "Building with version: [${version}]"
+        # ahead=$(git rev-list --count upstream/master...master)
+        # ahead=${ahead:-"beta"}
+        # echo "Building ahead: [${ahead}]"
+        # zipname="ludicrousdb-wpmudev-${version}-${ahead}.zip"
+        # echo "Building zipname: [${zipname}]"
+        # git archive --format=zip --prefix=ludicrousdb/ -o $zipname HEAD $(ls --color=none | grep -v 'tests')
+        # ls -lah
