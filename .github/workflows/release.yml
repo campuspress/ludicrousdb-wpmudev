@@ -32,4 +32,4 @@ jobs:
         echo "Building zipname: [${zipname}]"
         git archive --format=zip --prefix=ludicrousdb/ -o $zipname HEAD $(ls --color=none | grep -v 'tests')
         ls -lah
-        gh release create "v${version}-${ahead}" --generate-notes "${zipname}"
+        gh --repo $GITHUB_REPOSITORY release create "v${version}-${ahead}" --generate-notes "${zipname}"
