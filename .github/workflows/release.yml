@@ -20,11 +20,9 @@ jobs:
     - name: Run tests
       run: |
         git fetch
-        git tag
-        # git describe
-        # version=$(git describe upstream/master --abbrev=0)
-        # version=${version:-"current"}
-        # echo "Building with version: [${version}]"
+        version=$(git describe upstream/master --abbrev=0)
+        version=${version:-"current"}
+        echo "Building with version: [${version}]"
         # ahead=$(git rev-list --count upstream/master...master)
         # ahead=${ahead:-"beta"}
         # echo "Building ahead: [${ahead}]"
