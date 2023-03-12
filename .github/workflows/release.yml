@@ -20,6 +20,7 @@ jobs:
     - name: Run tests
       run: |
         git fetch
+        git tag
         # git describe
         # version=$(git describe upstream/master --abbrev=0)
         # version=${version:-"current"}
