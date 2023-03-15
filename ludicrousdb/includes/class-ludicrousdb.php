@@ -959,9 +959,7 @@ class LudicrousDB extends wpdb {
 			mysqli_real_connect( $this->dbhs[ $dbhname ], $pre_host . $host, $user, $password, null, $port, $socket, $client_flags );
 
 			if ( $this->dbhs[ $dbhname ]->connect_errno ) {
-				$this->dbhs[ $dbhname ] = false;
-
-				return false;
+				dead_db();
 			}
 		} else {
 
