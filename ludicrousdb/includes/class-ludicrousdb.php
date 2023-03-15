@@ -960,6 +960,7 @@ class LudicrousDB extends wpdb {
 
 			if ( $this->dbhs[ $dbhname ]->connect_errno ) {
 				dead_db();
+				return false;
 			}
 		} else {
 
