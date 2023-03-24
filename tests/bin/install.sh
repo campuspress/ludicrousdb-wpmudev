@@ -5,6 +5,8 @@ DB_PASS=${2:-""}
 
 ./tests/bin/install-wp-tests.sh ludicrousdb root "$DB_PASS" $DB_HOST
 
+echo "WordPress set up, setting up LudicrousDB"
+
 WP_CORE_DIR=${WP_CORE_DIR-/tmp/wordpress/}
 WP_CORE_DIR=$(echo $WP_CORE_DIR | sed "s:/\+$::")
 

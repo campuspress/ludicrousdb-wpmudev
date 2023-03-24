@@ -39,8 +39,6 @@ else
 	WP_TESTS_TAG="tags/$LATEST_VERSION"
 fi
 
-set -ex
-
 install_wp() {
 
 	if [ -d $WP_CORE_DIR ]; then
