@@ -322,7 +322,7 @@ class MultisiteDataset_QuerySelector {
 				return $fallback;
 			}
 
-			if ( ! in_array( $row['srv'], array_keys( $wpdb->ludicrous_servers ), true ) ) {
+			if ( ! in_array( $row['srv'], array_keys( $wpdb->ludicrous_servers ), false ) ) {
 				// return; // simple return falls back to global dataset
 				return $wpdb->bail( "Unknown connection handler for [{$bid}]" );
 			}
