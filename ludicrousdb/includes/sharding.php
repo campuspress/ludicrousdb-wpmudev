@@ -61,6 +61,15 @@ class MultisiteDataset_Sharder {
 	}
 
 	/**
+	 * Gets the shard name from the blog ID using the established naming scheme
+	 *
+	 * @param int $blog_id Site ID
+	 */
+	public function shard_name( int $blog_id ): string {
+		return substr( md5( $blog_id ), 0, 3 );
+	}
+
+	/**
 	 * Whether or not we have a valid, registered shard
 	 *
 	 * @param string $shard Shard name
@@ -69,7 +78,7 @@ class MultisiteDataset_Sharder {
 		if ( $shard === MultisiteDataset_Config::GLOBAL_DATASET ) {
 			return true;
 		}
-		return in_array( $shard, $this->get_shards(), true );
+		return in_array( $shard, $this->get_shards(), false );
 	}
 }
 
@@ -129,7 +138,7 @@ class MultisiteDataset {
 	 */
 	public function handle_insert_site( object $site ) {
 		$this->remove_query_selector();
-		$shard = $this->_sharder->shard_for( $site->id );
+		$shard = $this->_sharder->shard_name( $site->id );
 		if ( $this->_selector->shard_update( $site->id, $shard, $this->_db ) ) {
 			$this->_selector->set_dataset( $site->id, $shard );
 		} else {
@@ -258,7 +267,7 @@ class MultisiteDataset_QuerySelector {
 			return false;
 		}
 
-		$shard_esc = mysqli_real_escape_string( $dbh, $shard );
+		$shard_esc = mysqli_real_escape_string( $dbh, "{$shard}" );
 		$fld       = MultisiteDataset_Config::DATASET_FIELD;
 		$result    = mysqli_query(
 			$dbh,
@@ -278,14 +287,21 @@ class MultisiteDataset_QuerySelector {
 		if ( empty( $wpdb->dbhname ) ) {
 			return;
 		}
-		if ( empty( $wpdb->blogid ) ) {
+		if ( empty( $wpdb->table ) ) {
 			return;
 		}
 
-		$bid = (int) $wpdb->blogid;
+		$found = preg_match_all( "/^{$wpdb->base_prefix}(\d+)_/i", $wpdb->table, $matches );
+		if ( empty( $found ) ) {
+			return;
+		}
+		$bid = (int) $matches[1][0];
 		if ( $bid <= 1 ) {
 			return;
 		}
+
+		$sharder  = new MultisiteDataset_Sharder( $wpdb );
+		$fallback = $sharder->shard_name( $bid );
 
 		if ( ! $this->has_dataset( $bid ) ) {
 			// initialize to fallback so we don't do multiple DB queries.
@@ -294,16 +310,16 @@ class MultisiteDataset_QuerySelector {
 			$global = MultisiteDataset_Config::GLOBAL_READER;
 			$dbh    = $wpdb->dbhs[ $global ];
 			if ( empty( $dbh ) ) {
-				return; // should be unreachable, yet...
+				return $fallback; // should be unreachable, yet...
 			}
 
 			$fld    = MultisiteDataset_Config::DATASET_FIELD;
 			$result = mysqli_query( $dbh, "SELECT {$fld} FROM {$wpdb->blogs} WHERE blog_id={$bid};" );
 			if ( ! $result || false === $row = mysqli_fetch_assoc( $result ) ) {
-				return; // simple return falls back to global dataset
+				return $fallback;
 			}
 			if ( empty( $row['srv'] ) ) {
-				return; // simple return falls back to global dataset
+				return $fallback;
 			}
 
 			if ( ! in_array( $row['srv'], array_keys( $wpdb->ludicrous_servers ), true ) ) {
@@ -315,7 +331,7 @@ class MultisiteDataset_QuerySelector {
 		}
 
 		if ( ! $this->has_dataset( $bid, true ) ) {
-			return;
+			return $fallback;
 		}
 
 		return array( 'dataset' => $this->get_dataset( $bid ) );

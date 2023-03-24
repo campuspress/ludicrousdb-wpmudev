@@ -35,6 +35,21 @@ if ( ! function_exists( 'msds_ldb_delete_blog' ) ) {
 	}
 }
 
+for ( $i = 0; $i <= 161-3; $i++ ) {
+	$dataset  = substr( md5( "{$i}" ), 0, 3 );
+	$wpdb->add_database(
+		array(
+			'host'     => DB_HOST,
+			'user'     => DB_USER,
+			'password' => DB_PASSWORD,
+			'name'     => DB_NAME,
+			'dataset'  => $dataset,
+			'write'    => 1,
+			'read'     => 1,
+		)
+	);
+}
+
 $wpdb->add_database(
 	array(
 		'host'     => DB_HOST,
@@ -46,7 +61,6 @@ $wpdb->add_database(
 		'read'     => 1,
 	)
 );
-
 $wpdb->add_database(
 	array(
 		'host'     => DB_HOST,
@@ -58,7 +72,6 @@ $wpdb->add_database(
 		'read'     => 1,
 	)
 );
-
 $wpdb->add_database(
 	array(
 		'host'     => DB_HOST,

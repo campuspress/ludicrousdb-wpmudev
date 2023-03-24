@@ -34,6 +34,7 @@ class ShardingDatasetTest extends TestCase {
 
 	public function test_create_new_blog() {
 		global $wpdb;
+
 		$msd = new MultisiteDataset( $wpdb );
 		$msd->init();
 
@@ -88,7 +89,7 @@ class ShardingDatasetTest extends TestCase {
 	}
 
 	public function test_switch_to_blog() {
-		$sel     = $GLOBALS[ LDB_MULTISITE_DATASET ]->get_selector();
+		$sel = $GLOBALS[ LDB_MULTISITE_DATASET ]->get_selector();
 		$blog_id = wpmu_create_blog( 'localhost', 'test-shard-switching', 'SHARDZ', 0 );
 		$this->assertTrue(
 			is_numeric( $blog_id ),

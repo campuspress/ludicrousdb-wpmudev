@@ -91,9 +91,9 @@ class ShardingSharderWpdbTest extends TestCase {
 	public function test_get_shards() {
 		$shards = $this->sharder->get_shards();
 		$this->assertEquals(
+			161,
 			count( $shards ),
-			4,
-			'there should be exactly 4 shards (check tests/lib/bootstrap.php)'
+			'there should be exactly 161 shards (check tests/lib/bootstrap.php)'
 		);
 
 		$this->assertTrue(
@@ -104,20 +104,41 @@ class ShardingSharderWpdbTest extends TestCase {
 
 	public function test_blogid_sharding() {
 		$expected = [
-			0    => 'srv-one',
-			1    => 'srv-two',
-			2    => 'srv-three',
-			3    => 'srv-four',
-			161  => 'srv-two',
-			13   => 'srv-two',
-			12   => 'srv-one',
-			1312 => 'srv-one',
+			0    => 'cfc',
+			1    => 'c4c',
+			2    => 'c81',
+			3    => 'ecc',
+			161  => 'cfc',
+			13   => 'c51',
+			12   => 'c20',
+			1312 => '1ff',
 		];
 		foreach ( $expected as $blog_id => $shard ) {
 			$this->assertEquals(
-				$this->sharder->shard_for( $blog_id ),
 				$shard,
+				$this->sharder->shard_for( $blog_id ),
 				"expected {$shard} for {$blog_id}"
+			);
+		}
+	}
+
+	public function test_established_shard_naming() {
+		$suite = [
+			9910317,
+			9920666,
+			9931744,
+			9937231,
+			9947617,
+			9958159,
+			9961904,
+			9990288,
+			9995786,
+		];
+		foreach ( $suite as $test ) {
+			$this->assertEquals(
+				'abb',
+				$this->sharder->shard_name( $test ),
+				"invalid name for blog id {$test}"
 			);
 		}
 	}
