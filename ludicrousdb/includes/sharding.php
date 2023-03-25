@@ -10,7 +10,7 @@
 final class MultisiteDataset_Config {
 	const GLOBAL_DATASET = 'global';
 	const GLOBAL_READER  = 'global__r';
-	const DATASET_FIELD  = 'srv';
+	const DATASET_FIELD  = 'dataset';
 }
 
 /**
@@ -318,16 +318,20 @@ class MultisiteDataset_QuerySelector {
 			if ( ! $result || false === $row = mysqli_fetch_assoc( $result ) ) {
 				return $fallback;
 			}
-			if ( empty( $row['srv'] ) ) {
+			if ( empty( $row[ MultisiteDataset_Config::DATASET_FIELD ] ) ) {
 				return $fallback;
 			}
 
-			if ( ! in_array( $row['srv'], array_keys( $wpdb->ludicrous_servers ), false ) ) {
+			if ( ! in_array(
+				$row[ MultisiteDataset_Config::DATASET_FIELD ],
+				array_keys( $wpdb->ludicrous_servers ),
+				false
+			) ) {
 				// return; // simple return falls back to global dataset
 				return $wpdb->bail( "Unknown connection handler for [{$bid}]" );
 			}
 
-			$this->set_dataset( $bid, $row['srv'] );
+			$this->set_dataset( $bid, $row[ MultisiteDataset_Config::DATASET_FIELD ] );
 		}
 
 		if ( ! $this->has_dataset( $bid, true ) ) {
