@@ -10,6 +10,7 @@
 final class MultisiteDataset_Config {
 	const GLOBAL_DATASET = 'global';
 	const GLOBAL_READER  = 'global__r';
+	const GLOBAL_WRITER  = 'global__w';
 	const DATASET_FIELD  = 'dataset';
 }
 
@@ -252,8 +253,17 @@ class MultisiteDataset_QuerySelector {
 	 * @param LudicrousDB $wpdb LudicrousDB instance
 	 */
 	public function shard_update( $blog_id, $shard, $wpdb ): bool {
-		$global = MultisiteDataset_Config::GLOBAL_READER;
-		$dbh    = $wpdb->dbhs[ $global ];
+		$handles = array(
+			MultisiteDataset_Config::GLOBAL_WRITER,
+			MultisiteDataset_Config::GLOBAL_READER,
+		);
+		$dbh     = false;
+		foreach ( $handles as $global ) {
+			$dbh = $wpdb->dbhs[ $global ];
+			if ( ! empty( $dbh ) ) {
+				break;
+			}
+		}
 		if ( empty( $dbh ) ) {
 			return false; // should be unreachable, yet...
 		}
